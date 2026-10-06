@@ -1,0 +1,387 @@
+/* MHFU game font (falls back to sans-serif for glyphs it lacks, e.g. ★ — © ) */
+@font-face{
+  font-family:'MHFU';
+  src:url('fonts/mhfu_font.ttf') format('truetype');
+  font-display:swap;
+}
+/* Theme variables are set at runtime from the chosen color (see app.js). */
+:root{
+  --bg:#3e3e3e; --bg1:#000000; --bg2:#333; --content-bg:#2b2b2b; --panel-bg:#1f1f1f; --input-bg:#1a1a1a;
+  --hover:#2f2f2f; --accent:#7a7a7a; --accent-hover:#9a9a9a;
+  --text:#f3f3f3; --text-dim:#ffffff; --line:#ffffff1f; --card:#ffffff0d;
+  --titlebar-overlay:rgba(0,0,0,0.18);
+}
+*{box-sizing:border-box;scrollbar-color:var(--accent) var(--bg2);scrollbar-width:thin}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent-hover)}
+input,select,button,textarea{font-family:inherit}
+html,body{margin:0;height:100%;overflow:hidden}
+body{
+  font-family:'MHFU',"Segoe UI",system-ui,sans-serif;
+  background:var(--bg); color:var(--text); font-size:14px;
+  user-select:none; -webkit-user-select:none;
+}
+#app{display:flex;flex-direction:column;height:100vh}
+.hidden{display:none !important}
+
+/* Title bar */
+.titlebar{display:flex;align-items:center;gap:10px;padding:8px 14px}
+.titlebar-header{
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--accent) 90%,transparent),color-mix(in srgb,var(--accent) 90%,transparent)),
+    url('assets/titlebar-background.png');
+  background-size:auto 100%;
+  background-position:left center;
+  background-repeat:repeat;
+}
+.title-icon{width:32px;height:32px;object-fit:contain}
+.titlebar h1{font-size:15px;font-weight:600;margin:0;flex:1}
+.dirty-dot{color:#f5b400;font-size:13px;vertical-align:middle}
+.icon-btn{
+  background:transparent;border:none;color:var(--text);font-size:18px;
+  cursor:pointer;padding:6px 9px;border-radius:6px;line-height:1;
+}
+.icon-btn:hover{background:#ffffff1a}
+
+/* Layout — quest browser | editor | logbook */
+.layout{display:flex;flex:1;min-height:0}
+.sidebar{
+  width:270px;flex-shrink:0;padding:12px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:8px;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--accent) 90%,transparent),color-mix(in srgb,var(--accent) 90%,transparent)),
+    url('assets/sidebar-background-texture1.png');
+  background-size:auto 100%;
+  background-position:left center;
+  background-repeat:repeat;
+}
+/* The two large panes follow the Collection Tracker: its grid backdrop and detail panel
+   do the same job, so they take the same shades and the same rocky textures. The texture
+   matters as much as the tint — it breaks up what was a flat field of colour, which is
+   what made the brighter themes glare. */
+.editor{
+  flex:1 1 0;min-width:0;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;
+  background-color:var(--content-bg);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--content-bg) 84%,transparent),color-mix(in srgb,var(--content-bg) 84%,transparent)),
+    url('assets/rockyTextureDark.png');
+  background-repeat:repeat;background-size:auto,200px 200px;
+}
+.logbook{
+  width:400px;flex-shrink:0;min-width:0;padding:12px;display:flex;flex-direction:column;gap:8px;
+  border-left:1px solid var(--line);
+  background-color:var(--panel-bg);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--panel-bg) 90%,transparent),color-mix(in srgb,var(--panel-bg) 90%,transparent)),
+    url('assets/rockyTextureDark2.png');
+  background-repeat:repeat;background-size:auto,200px 200px;
+}
+
+/* Buttons */
+.btn{
+  background:#ffffff14;color:var(--text);border:1px solid var(--line);
+  border-radius:7px;padding:8px 14px;cursor:pointer;font-size:14px;
+}
+.btn:hover{background:#ffffff24}
+.btn.block{width:100%}
+.btn.tiny{padding:3px 10px;font-size:12px}
+.btn.block,.btn.tiny{
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg2) 80%,transparent),color-mix(in srgb,var(--bg2) 80%,transparent)),
+    url('assets/banner-background.png');
+  background-position:right;
+}
+/* Shared face for the editor's paired actions. Cancel and Save Entry sit together, so they
+   carry the same outline, weight and shadowed label; the only difference is the fill, and
+   that alone is what marks Save Entry as the primary. */
+.btn.accent,.btn.outlined{
+  border-color:#000;color:#fff;font-weight:600;
+  text-shadow:-1px 0 rgba(0,0,0,.55),1px 0 rgba(0,0,0,.55),0 -1px rgba(0,0,0,.55),0 1px rgba(0,0,0,.55);
+}
+/* Must stay after .btn.block,.btn.tiny — same specificity, so source order is what lets
+   the flat fill beat the banner texture on a button carrying both classes. */
+.btn.accent{background:var(--bg1);background-image:none}
+.btn.accent:hover{background:var(--bg2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:disabled:hover{background:#ffffff14}
+.btn.accent:disabled:hover{background:var(--bg1)}
+
+.hint{color:var(--text-dim);opacity:.75;font-size:12px;margin:2px 0}
+.row{display:flex;align-items:center}
+.row.gap{gap:8px}.row.end{justify-content:flex-end}
+
+/* Narrow-screen Entry/Logbook switcher — hidden on wide screens */
+.view-tabs{display:none;gap:6px;padding:8px 12px 0}
+.tab{
+  flex:1;background:#ffffff14;color:var(--text);border:1px solid var(--line);
+  border-radius:7px;padding:6px 10px;cursor:pointer;font-size:13px;font-family:inherit;
+}
+.tab.sel{background:var(--bg2);border-color:var(--accent-hover)}
+
+/* ── Quest browser ─────────────────────────────────────────────────────── */
+.search{
+  width:100%;background:var(--input-bg);color:var(--text);border:1px solid var(--line);
+  border-radius:7px;padding:7px 10px;font-size:13px;
+}
+.search::placeholder{color:var(--text-dim);opacity:.5}
+.qtree{flex:1;min-height:0;overflow-y:auto;padding-right:4px;display:flex;flex-direction:column;gap:6px}
+
+/* Tree mechanics, shared by both levels. */
+.qgrp>.qhead{display:flex;align-items:center;gap:4px;cursor:pointer;line-height:1.3}
+.qgrp>.qkids{display:none;flex-direction:column}
+.qgrp.open>.qkids{display:flex}
+.qtwist{width:16px;flex-shrink:0;text-align:center;color:var(--accent);font-size:15px;font-weight:700}
+.qcount{margin-left:auto;font-size:11px;opacity:.6;font-weight:400}
+
+/* Quest type groups get the Collection Tracker's category-section treatment: a
+   banner-textured head over a panel-body-textured body, boxed and clipped so the head's
+   texture stops at the rounded corner.
+   Tinted with --content-bg and --panel-bg rather than the Tracker's --bg2/--bg1, because
+   these sit on the sidebar, which is itself tinted with --accent — at the Tracker's values
+   the heads came out brighter than the pane holding them. */
+.qgrp:not(.qsub){border:1px solid var(--line);border-radius:8px;overflow:clip}
+.qgrp:not(.qsub)>.qhead{
+  padding:7px 10px;font-weight:700;
+  text-shadow:-1px 0 rgba(0,0,0,.55),1px 0 rgba(0,0,0,.55),0 -1px rgba(0,0,0,.55),0 1px rgba(0,0,0,.55);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--content-bg) 88%,transparent),color-mix(in srgb,var(--content-bg) 88%,transparent)),
+    url('assets/banner-background-plain.png');
+  background-size:auto 100%;background-position:left center;background-repeat:repeat;
+}
+.qgrp:not(.qsub)>.qhead:hover{filter:brightness(1.15)}
+.qgrp:not(.qsub)>.qkids{
+  padding:4px 6px 6px;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--panel-bg) 70%,transparent),color-mix(in srgb,var(--panel-bg) 70%,transparent)),
+    url('assets/panel-body-bg.png');
+  background-size:contain 100%;background-position:left center;background-repeat:repeat;
+}
+
+/* Rank subgroups stay plain — a second texture inside the body reads as noise. */
+.qsub{margin-top:2px}
+.qsub>.qhead{padding:4px 2px;font-weight:400;font-size:13px}
+.qsub>.qhead:hover{color:var(--accent-hover)}
+.qsub>.qkids{margin-left:16px}
+.qitem{
+  text-align:left;background:transparent;border:none;color:var(--text);
+  font-family:inherit;font-size:12.5px;line-height:1.35;
+  padding:3px 6px;border-radius:5px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+}
+.qitem:hover{background:#ffffff1a;color:var(--accent-hover)}
+.qitem.sel{background:var(--accent);color:#fff}
+.qitem-icon{width:18px;height:18px;object-fit:contain;flex-shrink:0}
+.qitem-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── Quest header on the editor ────────────────────────────────────────── */
+/* banner-background-plain.png is banner-background.png with its first 24px removed —
+   that strip holds a dark decorative clasp which, tiled at the left edge of a full-width
+   header, reads as a smudge rather than as trim. */
+/* Tinted with --content-bg at 88%, not --bg2 at 80%.
+   The banner texture averages rgb(210,210,210), so the fraction left showing lifts the
+   result hard — that, more than the tint, is why the header was the hottest thing on
+   screen. Stepping the tint down one shade barely moved it (Rajang's title went 1.53:1 to
+   1.71:1); it took --content-bg plus a heavier mix to get real change. Using the same
+   shade as the editor beneath still leaves the header raised, because its texture is pale
+   where the editor's rocky one is rgb(39,39,39). */
+.quest-head{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;position:relative;
+  border:1px solid var(--line);border-radius:8px;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--content-bg) 88%,transparent),color-mix(in srgb,var(--content-bg) 88%,transparent)),
+    url('assets/banner-background-plain.png');
+  background-size:auto 100%;
+  background-position:left center;
+  background-repeat:repeat;
+}
+.qh-icon{width:52px;height:52px;object-fit:contain;flex-shrink:0}
+.qh-text{min-width:0;flex:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+.qh-name{font-size:17px;font-weight:700;line-height:1.25}
+.qh-main{font-size:12px;opacity:.8;margin-top:3px;line-height:1.3}
+.qh-meta{font-size:11px;opacity:.65;margin-top:2px;line-height:1.3}
+.qh-meta:empty{display:none}
+.qh-unlock{opacity:.85}
+.qh-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:5px}
+.pill{
+  color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;
+  text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;
+  text-shadow:0 1px 1px rgba(0,0,0,.35);
+}
+.pill-key{background:#FF7200}
+.pill-urgent{background:#a3122a}
+.pill-hunt{background:#e52222}
+.pill-sm{background:#1a7eff}
+.pill-egg{background:#c4a07a}
+.pill-gathering{background:#22cc44}
+.pill-repel{background:#6a1fa8}
+.pill-arena{background:#1a5fa8}
+.pill-capture{background:#4a4a4a}
+
+/* ── Entry form ────────────────────────────────────────────────────────── */
+.editor-body{display:flex;flex-direction:column;gap:12px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+.field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--text-dim);min-width:0}
+.field.wide{grid-column:1 / -1}
+.field input,.field select,.field textarea{
+  background:var(--input-bg);color:var(--text);border:1px solid var(--line);
+  border-radius:7px;padding:7px 9px;font-size:13px;width:100%;min-width:0;
+  user-select:text;-webkit-user-select:text;
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--text-dim);opacity:.4}
+/* Dim the whole row, label included, when its value isn't the hunter's to set: the Date
+   while Timestamp is on, and Weapon until a type is chosen. Buttons already read as
+   disabled at .5, but nothing had said so for fields — the Date sat there looking
+   editable and simply refusing to take input. */
+.field:has(input:disabled),.field:has(select:disabled),.field:has(textarea:disabled){opacity:.5}
+.field input:disabled,.field select:disabled,.field textarea:disabled{cursor:not-allowed}
+.field input:focus,.field select:focus,.field textarea:focus{outline:1px solid var(--accent-hover)}
+.field textarea{resize:vertical;line-height:1.4}
+.weapon-row{display:flex;align-items:center;gap:6px}
+.weapon-icon{width:22px;height:22px;object-fit:contain;flex-shrink:0}
+fieldset.party{border:none;margin:0;padding:0}
+fieldset.party legend{padding:0;margin-bottom:4px;font-size:12px;color:var(--text-dim)}
+.party-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.editor-actions{display:flex;align-items:center;gap:8px}
+/* Switches rather than tick boxes — these are modes left on for a session, and a sliding
+   track says that where a checkbox says one-off choice.
+   The real checkbox stays in the DOM and keeps its focus and keyboard behaviour; it is
+   only moved out of sight, so :checked still drives the visuals. */
+.opt-toggle{
+  display:flex;align-items:center;gap:7px;font-size:11.5px;
+  color:var(--text-dim);opacity:.85;cursor:pointer;user-select:none;
+}
+.opt-toggle input{position:absolute;opacity:0;width:0;height:0}
+.switch{
+  position:relative;flex-shrink:0;width:30px;height:16px;border-radius:999px;
+  background:var(--input-bg);border:1px solid var(--line);
+  transition:background .15s,border-color .15s;
+}
+/* Travel is inner width (30 less the 2px of border) less the 12px knob and its 1px inset
+   at each end, so the knob lands flush against the far edge. */
+.switch::after{
+  content:"";position:absolute;top:1px;left:1px;width:12px;height:12px;border-radius:50%;
+  background:var(--text-dim);opacity:.6;
+  transition:transform .15s,opacity .15s,background .15s;
+}
+/* Two selectors for one state, deliberately. :checked is the honest one and covers a real
+   click; the .on class is set by syncFarmingSwitch and covers the state being restored at
+   boot, where .checked is assigned in script. Either alone would very likely do, and they
+   agree in every case, so the redundancy costs a selector and removes the doubt. */
+.opt-toggle.on .switch,
+.opt-toggle input:checked + .switch{background:var(--accent);border-color:var(--accent-hover)}
+.opt-toggle.on .switch::after,
+.opt-toggle input:checked + .switch::after{transform:translateX(14px);opacity:1;background:#fff}
+.opt-toggle:focus-within .switch{outline:2px solid var(--accent-hover);outline-offset:1px}
+.opt-toggle:hover{opacity:1}
+.editor-empty{opacity:.55}
+
+/* ── Logbook ───────────────────────────────────────────────────────────── */
+.lb-head{display:flex;align-items:center;gap:8px}
+.lb-head h2{font-size:15px;margin:0;flex:1;min-width:0}
+.lb-tools{display:flex;align-items:center;gap:8px;padding-bottom:2px}
+.lb-groupby{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text-dim);opacity:.85}
+/* Given the same banner treatment as .btn.tiny, which these sit beside in the toolbar —
+   as plain fields they were the only flat controls in a row of textured ones. */
+.lb-groupby select{
+  color:var(--text);border:1px solid var(--line);
+  border-radius:6px;padding:3px 6px;font-size:12px;font-family:inherit;cursor:pointer;
+  background-color:var(--input-bg);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg2) 80%,transparent),color-mix(in srgb,var(--bg2) 80%,transparent)),
+    url('assets/banner-background.png');
+  background-position:right;
+}
+/* Sticky so the heading stays put while you scroll that group's hunts. */
+.lb-group{
+  position:sticky;top:0;z-index:1;
+  display:flex;align-items:center;gap:8px;
+  margin:6px 0 -2px;padding:5px 10px;border-radius:6px;
+  border:1px solid var(--line);background:var(--bg2);
+  font-size:12px;font-weight:700;letter-spacing:.3px;
+}
+.lb-group:first-child{margin-top:0}
+.lb-group-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-group-count{font-weight:400;font-size:11px;opacity:.65;background:#ffffff1f;border-radius:9px;padding:1px 6px}
+.lb-count{
+  display:inline-block;min-width:20px;text-align:center;font-size:11px;font-weight:400;
+  background:#ffffff1f;border-radius:9px;padding:1px 6px;vertical-align:middle;
+}
+.lb-list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px}
+.lb-empty{opacity:.6;font-size:12.5px;line-height:1.5;margin:6px 2px}
+.log-entry{
+  border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#ffffff0f;
+  cursor:pointer;position:relative;
+}
+.log-entry:hover{background:#ffffff1c}
+.log-entry.sel{border-color:var(--accent-hover);background:#ffffff1c}
+.lb-selectall{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text-dim);opacity:.85;cursor:pointer}
+.lb-selectall input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
+.le-top{display:flex;align-items:center;gap:7px}
+.le-pick{accent-color:var(--accent);width:15px;height:15px;flex-shrink:0;cursor:pointer;margin:0}
+.log-entry.picked{border-color:var(--accent-hover);background:#ffffff1c}
+.le-icon{width:26px;height:26px;object-fit:contain;flex-shrink:0}
+.le-quest{font-weight:700;font-size:13px;line-height:1.25;min-width:0;flex:1;user-select:text;-webkit-user-select:text}
+.le-date{font-size:10.5px;opacity:.6;white-space:nowrap;margin-top:2px}
+.le-fields{margin:6px 0 0;font-size:12px;line-height:1.5;user-select:text;-webkit-user-select:text}
+.le-fields div{display:flex;gap:6px}
+.le-fields dt{opacity:.6;flex-shrink:0}
+.le-fields dd{margin:0;min-width:0;word-break:break-word}
+.le-notes{white-space:pre-wrap}
+.le-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:7px}
+.le-outcome{font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;color:#fff}
+.le-outcome.Success{background:#22cc44}
+.le-outcome.Fail{background:#e52222}
+.le-outcome.Abandoned{background:#4a4a4a}
+.le-carts{font-size:10.5px;opacity:.7;white-space:nowrap}
+.le-weapon-icon{width:18px;height:18px;object-fit:contain;flex-shrink:0}
+
+/* ── Modals ────────────────────────────────────────────────────────────── */
+.modal{position:fixed;inset:0;background:#000000a8;display:flex;align-items:center;justify-content:center;z-index:10}
+.modal-card{background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+  padding:20px;max-width:560px;width:100%;max-height:82vh;overflow-y:auto}
+.modal-card h2{margin:0 0 16px;font-size:18px}
+.modal-card p{margin:0 0 10px;line-height:1.45}
+.modal-card a{color:color-mix(in srgb, hsl(from var(--accent) calc(h + 180) 75% 60%) 50%, var(--text))}
+.modal-card code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 4px;font-family:ui-monospace,Consolas,monospace;font-size:12px}
+.modal-card .muted{color:var(--text-dim);font-size:13px;opacity:.75}
+.modal-card ul{margin:0 0 10px;padding-left:18px}
+.modal-card li{margin-bottom:5px;line-height:1.4}
+.modal-divider{border:none;border-top:1px solid var(--line);margin:14px 0 10px}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:15px}
+.swatch{aspect-ratio:1;border-radius:8px;border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden}
+.swatch.sel{border-color:#fff}
+.swatch-icon{position:absolute;top:7%;left:50%;transform:translateX(-50%);width:60%;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.swatch span{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:10px;line-height:1.5;color:#fff;background:rgba(0,0,0,.45)}
+
+/* Other MHGU apps modal */
+.app-links{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:10px}
+.app-links li{border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:#ffffff08}
+.app-links li.current{opacity:.72}
+.app-links a,.app-name{font-weight:600;font-size:14px}
+.app-here{font-weight:400;font-size:11px;opacity:.7;border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin-left:7px}
+.app-desc{display:block;margin-top:3px;font-size:12px;opacity:.8;line-height:1.4}
+
+/* Toast */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:20;
+  background:var(--bg2);border:1px solid var(--line);border-radius:8px;
+  padding:9px 16px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.45);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+/* Under 1100px there isn't room for editor + logbook side by side, so the tab
+   strip appears and .layout shows one of them at a time. */
+@media (max-width:1100px){
+  .view-tabs{display:flex}
+  .logbook{width:auto;flex:1 1 0;border-left:none}
+  #app[data-view="editor"] .logbook{display:none}
+  #app[data-view="log"] .editor{display:none}
+}
+@media (max-width:760px){
+  .layout{flex-direction:column}
+  .sidebar{width:auto;max-height:34vh;border-bottom:1px solid var(--line)}
+  .form-grid{grid-template-columns:minmax(0,1fr)}
+  .party-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

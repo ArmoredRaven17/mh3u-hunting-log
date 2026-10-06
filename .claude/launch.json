@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mh3u-hunting-log",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5581", "--directory", "docs"],
+      "port": 5581
+    }
+  ]
+}
