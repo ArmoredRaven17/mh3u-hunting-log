@@ -59,7 +59,7 @@
     ["P. Rathian", "#D4358C", "Pink Rathian"], ["Qurupeco", "#C8679D"],
     ["Duramboros", "#5a411f"], ["Diablos", "#997c54"],
     ["Barroth", "#835A32"], ["Bullfango", "#B17A47"],
-    ["S. Rathalos", "#505358", "Silver Rathalos"], ["Barioth", "#7C879B"],
+    ["Barioth", "#505358"], ["S. Rathalos", "#7C879B", "Silver Rathalos"],
     ["Forbidden", "#1E2025", "Question Mark"],
   ];
   // Retired hexes remap on read (a saved theme is a bare hex). Kept identical to the other apps.
